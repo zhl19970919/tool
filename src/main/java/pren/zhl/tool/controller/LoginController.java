@@ -21,6 +21,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @RestController
+@RequestMapping("/")
 public class LoginController {
 
     @Resource
@@ -31,6 +32,9 @@ public class LoginController {
 
     @Resource
     private Response response;
+
+
+
 
     /**
      * create by: leigq

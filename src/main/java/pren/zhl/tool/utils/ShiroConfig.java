@@ -33,7 +33,7 @@ import java.util.Map;
 @Data
 public class ShiroConfig {
 
-    private String host = "localhost:6378";
+    private String host = "127.0.0.1:6378";
     //private int port = 6379;
     private String password;
     private Duration timeout;
@@ -169,11 +169,12 @@ public class ShiroConfig {
      *
      * @return RedisManager
      */
-    private RedisManager redisManager() {
+    @Bean
+    public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
         redisManager.setHost(host);
         redisManager.setTimeout((int) timeout.toMillis());
-        redisManager.setPassword(password);
+        //redisManager.setPassword(password);
         return redisManager;
     }
 
