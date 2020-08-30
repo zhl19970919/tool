@@ -1,5 +1,7 @@
 package pren.zhl.tool.mapper;
 
+import org.apache.ibatis.annotations.Param;
+import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -12,5 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2020-08-27
  */
 public interface AccountMapper extends BaseMapper<Account> {
-
+    AccountDTO findByOpencode(@Param("openCode") String username);
 }

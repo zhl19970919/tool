@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pren.zhl.tool.mapper.PermissionMapper">
-
+    <select id="getRolePermissions" resultType="pren.zhl.tool.entity.Permission">
+        SELECT
+          p.id AS id, p.parent_id AS parentId, p.`code` AS `code`, p.`name` AS `name`, p.intro AS intro, p.category AS category, p.uri AS uri, p.created AS created, p.creator AS creator, p.edited AS edited, p.editor AS editor, p.deleted AS deleted
+        FROM
+          `tool_role` AS r,
+          `tool_permission` AS p,
+          `tool_role_permission` AS rp
+        WHERE r.`id` = rp.`role_id`
+	      AND p.deleted = 0
+          AND p.`id` = rp.`permission_id`
+          AND r.`id` = #{roleId};
+    </select>
 </mapper>

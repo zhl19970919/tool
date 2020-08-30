@@ -12,9 +12,10 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Permission;
 import pren.zhl.tool.entity.Role;
-import pren.zhl.tool.entity.User;
+import pren.zhl.tool.service.IAccountService;
 import pren.zhl.tool.service.IPermissionService;
 import pren.zhl.tool.service.IRoleService;
 import pren.zhl.tool.service.IUserService;
@@ -35,6 +36,9 @@ public class MyShiroRealm extends AuthorizingRealm {
 
     @Resource
     private IUserService iUserService;
+
+    @Resource
+    private IAccountService iAccountService;
 
     @Resource
     private IRoleService iRoleService;
@@ -59,10 +63,10 @@ public class MyShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         //如果身份认证的时候没有传入User对象，这里只能取到userName
         //也就是SimpleAuthenticationInfo构造的时候第一个参数传递需要User对象
-        User user = (User) principals.getPrimaryPrincipal();
+        AccountDTO accountDTO = (AccountDTO) principals.getPrimaryPrincipal();
 
         // 查询用户角色，一个用户可能有多个角色
-        List<Role> roles = iRoleService.getUserRoles(user.getId());
+        List<Role> roles = iRoleService.getUserRoles(accountDTO.getUserId());
 
         for (Role role : roles) {
             authorizationInfo.addRole(role.getIntro());
@@ -93,18 +97,18 @@ public class MyShiroRealm extends AuthorizingRealm {
 
         //通过username从数据库中查找 User对象.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        User user = iUserService.findByUsername(userName);
-        if (Objects.isNull(user)) {
+        AccountDTO accountDTO =  iAccountService.findByOpencode(userName);
+        if (Objects.isNull(accountDTO)) {
             return null;
         }
 
         return new SimpleAuthenticationInfo(
                 // 这里传入的是user对象，比对的是用户名，直接传入用户名也没错，但是在授权部分就需要自己重新从数据库里取权限
-                user,
+                accountDTO,
                 // 密码
-                user.getPassword(),
+                accountDTO.getPassword(),
                 // salt = username + salt
-                ByteSource.Util.bytes(user.getCredentialsSalt()),
+                ByteSource.Util.bytes(accountDTO.getCredentialsSalt()),
                 // realm name
                 getName()
         );

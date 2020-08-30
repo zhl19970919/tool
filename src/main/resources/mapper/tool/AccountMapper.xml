@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pren.zhl.tool.mapper.AccountMapper">
-
+    <select id="findByOpencode" resultType="pren.zhl.tool.dto.AccountDTO">
+        SELECT
+            a.id AS id,
+            a.category AS category,
+            a.creator AS creator,
+            u.created AS created,
+            u.deleted AS deleted,
+            u.edited AS edited,
+            u.editor AS editor,
+            a.open_code AS openCode,
+            a.user_id AS userId,
+            u.head_img_url AS headImgUrl,
+            u.mobile AS mobile,
+            u.`name` AS `name`,
+            u.`password` AS `password`,
+            u.state AS state,
+            u.salt AS salt
+        FROM
+            `tool_account` AS a
+            LEFT JOIN `tool_user` AS u ON a.user_id = u.id
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="u.deleted != null and u.deleted.length() > 0"> AND u.deleted = #{userDeleted} </if>
+            <if test="a.deleted != null and a.deleted.length() > 0"> AND a.deleted = 0 </if>
+            <if test="a.open_code != null and a.open_code.length() > 0"> AND a.open_code = #{openCode} </if>
+            <if test="a.user_id != null and a.user_id.length() > 0"> AND a.user_id = #{userId} </if>
+        </trim>
+    </select>
 </mapper>

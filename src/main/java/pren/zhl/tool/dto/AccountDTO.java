@@ -1,31 +1,19 @@
-package pren.zhl.tool.entity;
+package pren.zhl.tool.dto;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * <p>
- * 账号
- * </p>
- *
- * @author zhl
- * @since 2020-08-27
- */
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("tool_account")
-@ApiModel(value="Account对象", description="账号")
-public class Account implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+@ApiModel(value="AccountDTO", description="账号")
+public class AccountDTO {
     @ApiModelProperty(value = "账号ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -33,11 +21,7 @@ public class Account implements Serializable {
     @ApiModelProperty(value = "用户ID")
     private Long userId;
 
-    @ApiModelProperty(value = "登录账号,如手机号等\n" +
-            "1.普通账号\n" +
-            "2.手机号\n" +
-            "3.邮箱\n" +
-            "4.其他")
+    @ApiModelProperty(value = "登录账号,如手机号等")
     private String openCode;
 
     @ApiModelProperty(value = "账号类别")
@@ -58,5 +42,28 @@ public class Account implements Serializable {
     @ApiModelProperty(value = "逻辑删除:0=未删除,1=已删除")
     private Double deleted;
 
+    @ApiModelProperty(value = "姓名")
+    private String name;
 
+    @ApiModelProperty(value = "头像图片地址")
+    private String headImgUrl;
+
+    @ApiModelProperty(value = "手机号码")
+    private String mobile;
+
+    @ApiModelProperty(value = "密码加盐")
+    private String salt;
+
+    @ApiModelProperty(value = "登录密码")
+    private String password;
+
+
+    /**
+     * 密码盐. 重新对盐重新进行了定义，用户名+salt，这样就不容易被破解，可以采用多种方式定义加盐
+     *
+     * @return
+     */
+    public String getCredentialsSalt() {
+        return this.name + this.salt;
+    }
 }
