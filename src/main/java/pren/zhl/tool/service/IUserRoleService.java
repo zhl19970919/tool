@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author zhl
  * @since 2020-08-27
  */
-@Primary
+
 public interface IUserRoleService extends IService<UserRole> {
 
 }

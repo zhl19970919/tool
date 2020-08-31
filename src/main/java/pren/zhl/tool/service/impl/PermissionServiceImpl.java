@@ -1,5 +1,6 @@
 package pren.zhl.tool.service.impl;
 
+import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.entity.Permission;
 import pren.zhl.tool.mapper.PermissionMapper;
 import pren.zhl.tool.service.IPermissionService;
@@ -18,6 +19,7 @@ import java.util.List;
  * @since 2020-08-27
  */
 @Service
+@Primary
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements IPermissionService {
     @Resource
     private PermissionMapper permissionMapper;

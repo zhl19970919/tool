@@ -18,7 +18,7 @@ import java.util.List;
  * @author zhl
  * @since 2020-08-27
  */
-@Primary
+
 public interface IAccountService extends IService<Account> {
 
     /**
@@ -30,7 +30,9 @@ public interface IAccountService extends IService<Account> {
      */
     Account findByUsername(String userName);
 
-    AccountDTO findByOpencode(String username);
+    AccountDTO findByOpencode(String username, String userDeleted, String userId);
+
+    Boolean register(AccountDTO accountDTO);
 
     /**
      * create by: leigq

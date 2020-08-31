@@ -1,5 +1,6 @@
 package pren.zhl.tool.service.impl;
 
+import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.entity.RolePermission;
 import pren.zhl.tool.mapper.RolePermissionMapper;
 import pren.zhl.tool.service.IRolePermissionService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @since 2020-08-27
  */
 @Service
+@Primary
 public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper, RolePermission> implements IRolePermissionService {
 
 }

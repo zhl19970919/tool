@@ -63,6 +63,17 @@ public class LoginController {
         return response.success("登录成功！", loginUser);
     }
 
+
+    @PostMapping("/register")
+    public Response register(AccountDTO accountDTO){
+        Boolean flag = iAccountService.register(accountDTO);
+        if(flag){
+            CacheUser loginUser = iAccountService.login(accountDTO.getOpenCode(), accountDTO.getPassword());
+            return response.success("注册成功，已自动登录！", loginUser);
+        }else
+            return response.failure("注册失败！");
+    }
+
     /**
      * create by: leigq
      * description: 登出

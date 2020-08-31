@@ -8,17 +8,24 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.bean.CacheUser;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
+import pren.zhl.tool.entity.User;
 import pren.zhl.tool.mapper.AccountMapper;
 import pren.zhl.tool.service.IAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import pren.zhl.tool.service.IUserService;
 
 import javax.annotation.Resource;
 import javax.security.auth.login.LoginException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 /**
  * <p>
@@ -29,10 +36,17 @@ import java.util.List;
  * @since 2020-08-27
  */
 @Service
+@Primary
 public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> implements IAccountService {
 
     @Resource
     private AccountMapper accountMapper;
+
+    @Resource
+    private IUserService iUserService;
+
+    @Resource
+    private IAccountService iAccountService;
 
     @Override
     public Account findByUsername(String username) {
@@ -42,8 +56,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public AccountDTO findByOpencode(String username) {
-        return accountMapper.findByOpencode(username);
+    public AccountDTO findByOpencode(String username,String userDeleted, String userId) {
+        return accountMapper.findByOpencode(username,userDeleted,userId);
     }
 
     @Override
@@ -95,6 +109,32 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
+    public Boolean register(AccountDTO accountDTO){
+        Account account = new Account();
+        User user = new User();
+        BeanUtils.copyProperties(accountDTO,account);
+        BeanUtils.copyProperties(accountDTO,user);
+        user.setId(accountDTO.getUserId());
+        Integer count = iUserService.countUserById(user.getId());
+        if(count > 0){
+            return false;
+        }else{
+            try {
+                iUserService.save(user);
+                iAccountService.save(account);
+                return true;
+            }catch (Exception e){
+                log.error("用户注册插库报错");
+                e.printStackTrace();
+                iUserService.removeById(user.getId());
+                iAccountService.removeById(account.getId());
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     public void logout() {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
@@ -104,5 +144,6 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     public List<Account> listAccounts() {
         return baseMapper.selectList(new LambdaQueryWrapper<>());
     }
+
 
 }

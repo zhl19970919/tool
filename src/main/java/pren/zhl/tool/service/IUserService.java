@@ -14,9 +14,13 @@ import java.util.List;
  * @author zhl
  * @since 2020-08-27
  */
-@Primary
+
 public interface IUserService extends IService<User> {
 
     List<User> listUsers();
+
+    User findUserById(Long id);
+
+    Integer countUserById(Long id);
 }
 

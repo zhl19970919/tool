@@ -14,5 +14,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2020-08-27
  */
 public interface AccountMapper extends BaseMapper<Account> {
-    AccountDTO findByOpencode(@Param("openCode") String username);
+    AccountDTO findByOpencode(@Param("openCode") String username, @Param("userDeleted") String userDeleted, @Param("userId") String userId);
+
 }

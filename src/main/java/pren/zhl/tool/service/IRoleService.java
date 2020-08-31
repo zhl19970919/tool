@@ -14,7 +14,7 @@ import java.util.List;
  * @author zhl
  * @since 2020-08-27
  */
-@Primary
+
 public interface IRoleService extends IService<Role> {
     List<Role> getUserRoles(Long userId);
 }

@@ -1,5 +1,6 @@
 package pren.zhl.tool.service.impl;
 
+import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.entity.Role;
 import pren.zhl.tool.mapper.RoleMapper;
 import pren.zhl.tool.service.IRoleService;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  * @since 2020-08-27
  */
 @Service
+@Primary
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IRoleService {
     @Resource
     private RoleMapper roleMapper;

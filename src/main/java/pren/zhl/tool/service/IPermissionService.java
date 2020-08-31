@@ -15,7 +15,7 @@ import java.util.List;
  * @author zhl
  * @since 2020-08-27
  */
-@Primary
+
 public interface IPermissionService extends IService<Permission> {
     List<Permission> getRolePermissions(@Param("roleId") Long roleId);
 }
