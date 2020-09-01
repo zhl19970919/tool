@@ -1,32 +1,33 @@
 package pren.zhl.tool.service.impl;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Primary;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import pren.zhl.tool.bean.CacheUser;
+import pren.zhl.tool.bean.CustomIdGenerator;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import pren.zhl.tool.entity.User;
 import pren.zhl.tool.mapper.AccountMapper;
+import pren.zhl.tool.mapper.UserMapper;
 import pren.zhl.tool.service.IAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import pren.zhl.tool.service.IUserService;
-
 import javax.annotation.Resource;
-import javax.security.auth.login.LoginException;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-
 /**
  * <p>
  * 账号 服务实现类
@@ -37,6 +38,7 @@ import java.util.concurrent.locks.Lock;
  */
 @Service
 @Primary
+@Transactional(rollbackFor = Exception.class)
 public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> implements IAccountService {
 
     @Resource
@@ -46,7 +48,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     private IUserService iUserService;
 
     @Resource
-    private IAccountService iAccountService;
+    private UserMapper userMapper;
+
 
     @Override
     public Account findByUsername(String username) {
@@ -71,7 +74,6 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
 
         CacheUser cacheUser = null;
-
         // 4、认证
         try {
             // 传到 MyShiroRealm 类中的方法进行认证
@@ -85,49 +87,43 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
             log.warn("CacheUser is {}");
         } catch (UnknownAccountException e) {
             log.error("账户不存在异常：", e);
-            try {
-                throw new LoginException("账号不存在!");
-            } catch (LoginException loginException) {
-                loginException.printStackTrace();
-            }
+            return CacheUser.builder().text("账户不存在异常!").build();
         } catch (IncorrectCredentialsException e) {
             log.error("凭据错误（密码错误）异常：", e);
-            try {
-                throw new LoginException("密码不正确!");
-            } catch (LoginException loginException) {
-                loginException.printStackTrace();
-            }
+            return CacheUser.builder().text("凭据错误（密码错误）异常!").build();
         } catch (AuthenticationException e) {
             log.error("身份验证异常:", e);
-            try {
-                throw new LoginException("用户验证失败!");
-            } catch (LoginException loginException) {
-                loginException.printStackTrace();
-            }
+            return CacheUser.builder().text("身份验证异常!").build();
         }
         return cacheUser;
     }
 
     @Override
     public Boolean register(AccountDTO accountDTO){
+        String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
+        accountDTO.setPassword(new Md5Hash(accountDTO.getPassword(),salt,2).toString());
+        accountDTO.setSalt(salt);
         Account account = new Account();
         User user = new User();
         BeanUtils.copyProperties(accountDTO,account);
         BeanUtils.copyProperties(accountDTO,user);
-        user.setId(accountDTO.getUserId());
-        Integer count = iUserService.countUserById(user.getId());
+        user.setId(userMapper.getNextId());
+        account.setUserId(user.getId());
+        QueryWrapper<Account> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("open_code",accountDTO.getOpenCode());
+        Integer count = baseMapper.selectCount(queryWrapper);
         if(count > 0){
             return false;
         }else{
             try {
                 iUserService.save(user);
-                iAccountService.save(account);
+                baseMapper.insert(account);
                 return true;
             }catch (Exception e){
                 log.error("用户注册插库报错");
                 e.printStackTrace();
-                iUserService.removeById(user.getId());
-                iAccountService.removeById(account.getId());
+                //事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         }
         return false;

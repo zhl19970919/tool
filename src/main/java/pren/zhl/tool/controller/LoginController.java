@@ -3,6 +3,7 @@ package pren.zhl.tool.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,18 +61,31 @@ public class LoginController {
 
         CacheUser loginUser = iAccountService.login(userName, password);
         // 登录成功返回用户信息
-        return response.success("登录成功！", loginUser);
+        if (loginUser.getToken() != null && loginUser.getToken().trim().length() > 0)
+            return response.success("登录成功！", loginUser);
+        else
+            return response.failure("登录失败",loginUser);
     }
 
 
     @PostMapping("/register")
     public Response register(AccountDTO accountDTO){
+        String userName = accountDTO.getOpenCode();
+        String password = accountDTO.getPassword();
+        String name = accountDTO.getName();
+        if (StringUtils.isBlank(userName))
+            return  response.failure("用户名为空！");
+        if (StringUtils.isBlank(password))
+            return  response.failure("密码为空！");
+        if (StringUtils.isBlank(name))
+            return  response.failure("昵称能为空!");
         Boolean flag = iAccountService.register(accountDTO);
         if(flag){
-            CacheUser loginUser = iAccountService.login(accountDTO.getOpenCode(), accountDTO.getPassword());
+            CacheUser loginUser = iAccountService.login(userName, password);
             return response.success("注册成功，已自动登录！", loginUser);
         }else
             return response.failure("注册失败！");
+
     }
 
     /**

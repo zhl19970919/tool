@@ -1,6 +1,7 @@
 package pren.zhl.tool.service;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.transaction.annotation.Transactional;
 import pren.zhl.tool.bean.CacheUser;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;

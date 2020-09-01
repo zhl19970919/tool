@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.context.annotation.Primary;
+import org.springframework.transaction.annotation.Transactional;
 import pren.zhl.tool.entity.User;
 import pren.zhl.tool.mapper.UserMapper;
 import pren.zhl.tool.service.IUserService;
@@ -28,6 +29,7 @@ import javax.security.auth.login.LoginException;
 @Service
 @Primary
 @Slf4j
+@Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
     @Override

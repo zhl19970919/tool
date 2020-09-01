@@ -12,6 +12,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.context.annotation.Lazy;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Permission;
 import pren.zhl.tool.entity.Role;
@@ -34,15 +35,19 @@ import java.util.Objects;
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
+    @Lazy
     @Resource
     private IUserService iUserService;
 
+    @Lazy
     @Resource
     private IAccountService iAccountService;
 
+    @Lazy
     @Resource
     private IRoleService iRoleService;
 
+    @Lazy
     @Resource
     private IPermissionService iPermissionService;
 
@@ -108,7 +113,8 @@ public class MyShiroRealm extends AuthorizingRealm {
                 // 密码
                 accountDTO.getPassword(),
                 // salt = username + salt
-                ByteSource.Util.bytes(accountDTO.getCredentialsSalt()),
+                //ByteSource.Util.bytes(accountDTO.getCredentialsSalt()),
+                ByteSource.Util.bytes(accountDTO.getSalt()),
                 // realm name
                 getName()
         );

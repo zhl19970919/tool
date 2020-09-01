@@ -25,4 +25,6 @@ public class CacheUser implements Serializable {
     private String userName;
 
     private String token;
+
+    private String text;
 }
