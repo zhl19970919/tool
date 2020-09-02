@@ -1,8 +1,10 @@
 package pren.zhl.tool.service.impl;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sun.xml.internal.ws.api.pipe.Tube;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -16,7 +18,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import pren.zhl.tool.bean.CacheUser;
-import pren.zhl.tool.bean.CustomIdGenerator;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import pren.zhl.tool.entity.User;
@@ -99,7 +100,16 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public Boolean register(AccountDTO accountDTO){
+    public Integer register(AccountDTO accountDTO){
+        String userName = accountDTO.getOpenCode();
+        String password = accountDTO.getPassword();
+        String name = accountDTO.getName();
+        if (StringUtils.isBlank(userName))
+            return  -1;
+        if (StringUtils.isBlank(password))
+            return  -2;
+        if (StringUtils.isBlank(name))
+            return  -3;
         String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
         accountDTO.setPassword(new Md5Hash(accountDTO.getPassword(),salt,2).toString());
         accountDTO.setSalt(salt);
@@ -113,20 +123,19 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         queryWrapper.eq("open_code",accountDTO.getOpenCode());
         Integer count = baseMapper.selectCount(queryWrapper);
         if(count > 0){
-            return false;
+            return 0;
         }else{
             try {
                 iUserService.save(user);
                 baseMapper.insert(account);
-                return true;
+                return 1;
             }catch (Exception e){
-                log.error("用户注册插库报错");
-                e.printStackTrace();
+                log.error("用户注册插库报错",e);
                 //事务回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         }
-        return false;
+        return 0;
     }
 
 
@@ -139,6 +148,27 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     @Override
     public List<Account> listAccounts() {
         return baseMapper.selectList(new LambdaQueryWrapper<>());
+    }
+
+    @Override
+    public Boolean delete(Long userId){
+        User user = new User();
+        Account account = new Account();
+        user.setId(userId);
+        user.setDeleted(true);
+        account.setDeleted(true);
+        try {
+            iUserService.updateById(user);
+            UpdateWrapper<Account> updateWrapper = new UpdateWrapper<Account>();
+            updateWrapper.eq("user_id",userId);
+            accountMapper.update(account,updateWrapper);
+            return true;
+        }catch (Exception e){
+            log.error("用户删除报错",e);
+            //事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return false;
     }
 
 

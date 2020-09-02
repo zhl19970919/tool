@@ -1,6 +1,7 @@
 package pren.zhl.tool.service.impl;
 
 import org.springframework.context.annotation.Primary;
+import pren.zhl.tool.dto.RoleDTO;
 import pren.zhl.tool.entity.Role;
 import pren.zhl.tool.mapper.RoleMapper;
 import pren.zhl.tool.service.IRoleService;
@@ -24,7 +25,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     private RoleMapper roleMapper;
 
     @Override
-    public List<Role> getUserRoles(Long userId) {
+    public List<RoleDTO> getUserRoles(Long userId) {
         return roleMapper.getUserRoles(userId);
     }
 }

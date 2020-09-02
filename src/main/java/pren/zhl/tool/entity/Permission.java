@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -69,5 +71,5 @@ public class Permission implements Serializable {
     @ApiModelProperty(value = "逻辑删除:0=未删除,1=已删除")
     private Boolean deleted;
 
-
+    private List<Permission> subAppMenu;
 }

@@ -22,5 +22,6 @@ public interface IUserService extends IService<User> {
     User findUserById(Long id);
 
     Integer countUserById(Long id);
+
 }
 

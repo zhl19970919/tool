@@ -14,13 +14,12 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.context.annotation.Lazy;
 import pren.zhl.tool.dto.AccountDTO;
+import pren.zhl.tool.dto.RoleDTO;
 import pren.zhl.tool.entity.Permission;
-import pren.zhl.tool.entity.Role;
 import pren.zhl.tool.service.IAccountService;
 import pren.zhl.tool.service.IPermissionService;
 import pren.zhl.tool.service.IRoleService;
 import pren.zhl.tool.service.IUserService;
-
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
@@ -71,12 +70,14 @@ public class MyShiroRealm extends AuthorizingRealm {
         AccountDTO accountDTO = (AccountDTO) principals.getPrimaryPrincipal();
 
         // 查询用户角色，一个用户可能有多个角色
-        List<Role> roles = iRoleService.getUserRoles(accountDTO.getUserId());
+        List<RoleDTO> roles = iRoleService.getUserRoles(accountDTO.getUserId());
 
-        for (Role role : roles) {
-            authorizationInfo.addRole(role.getIntro());
+        for (RoleDTO role : roles) {
+            authorizationInfo.addRole(role.getName());
             // 根据角色查询权限
-            List<Permission> permissions = iPermissionService.getRolePermissions(role.getId());
+            List<Permission> permissions = iPermissionService.getRolePermissions(role.getRoleId());
+            //List<Permission> treePermission = new ArrayList<Permission>();
+            //treePermission = new Utils().getAppMenu(permissions,treePermission);
             for (Permission p : permissions) {
                 authorizationInfo.addStringPermission(p.getIntro());
             }

@@ -62,7 +62,7 @@ public class Account implements Serializable {
     private String editor;
 
     @ApiModelProperty(value = "逻辑删除:0=未删除,1=已删除")
-    private Double deleted;
+    private Boolean deleted;
 
 
 }

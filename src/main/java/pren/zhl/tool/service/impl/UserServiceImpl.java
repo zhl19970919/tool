@@ -44,5 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public  Integer countUserById(Long id){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
-        return  baseMapper.selectCount(queryWrapper);}
+        return  baseMapper.selectCount(queryWrapper);
+    }
+
 }

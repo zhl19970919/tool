@@ -33,7 +33,14 @@ public interface IAccountService extends IService<Account> {
 
     AccountDTO findByOpencode(String username, String userDeleted, String userId);
 
-    Boolean register(AccountDTO accountDTO);
+    /**
+     * 新增用户
+     * @param accountDTO
+     * @return
+     */
+    Integer register(AccountDTO accountDTO);
+
+    Boolean delete(Long userId);
 
     /**
      * create by: leigq

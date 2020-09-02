@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pren.zhl.tool.mapper.RoleMapper">
-
+    <resultMap id="userRolesMap" type="pren.zhl.tool.entity.Role">
+        <result column="parent_id" javaType="Integer" property="parentId"></result>
+        <result column="code" javaType="Integer" property="code"></result>
+        <result column="name" javaType="String" property="name"></result>
+        <result column="intro" javaType="String" property="intro"></result>
+    </resultMap>
+    <select id="getUserRoles" resultType="pren.zhl.tool.dto.RoleDTO">
+        SELECT
+            u.id AS userId,
+            r.id AS roleId,
+            parent_id AS parentId,
+            CODE AS CODE,
+            r.NAME AS NAME,
+            intro AS intro
+        FROM
+            `tool_user` AS u,
+            `tool_role` AS r,
+            `tool_user_role` ur
+        WHERE
+            u.`id` = ur.`user_id`
+            AND r.`id` = ur.`role_id`
+            AND u.`id` = #{userId}
+  </select>
 </mapper>

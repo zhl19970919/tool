@@ -1,6 +1,7 @@
 package pren.zhl.tool.service;
 
 import org.springframework.context.annotation.Primary;
+import pren.zhl.tool.dto.RoleDTO;
 import pren.zhl.tool.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,5 +17,5 @@ import java.util.List;
  */
 
 public interface IRoleService extends IService<Role> {
-    List<Role> getUserRoles(Long userId);
+    List<RoleDTO> getUserRoles(Long userId);
 }

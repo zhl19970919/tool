@@ -1,6 +1,7 @@
 package pren.zhl.tool.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import pren.zhl.tool.dto.RoleDTO;
 import pren.zhl.tool.entity.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -15,5 +16,5 @@ import java.util.List;
  * @since 2020-08-27
  */
 public interface RoleMapper extends BaseMapper<Role> {
-    List<Role> getUserRoles(@Param("userId") Long userId);
+    List<RoleDTO> getUserRoles(@Param("userId") Long userId);
 }

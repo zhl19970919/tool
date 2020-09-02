@@ -1,8 +1,13 @@
 package pren.zhl.tool.utils;
 
 import lombok.Data;
+import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
+import org.apache.shiro.authz.Authorizer;
+import org.apache.shiro.authz.ModularRealmAuthorizer;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -18,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -198,6 +205,36 @@ public class ShiroConfig {
     }
 
     /**
+     *
+     * @param myRealm
+     * @return authorizer
+     * description:权限校验
+     */
+    @Bean
+    public Authorizer authorizer(MyShiroRealm myRealm){
+        ModularRealmAuthorizer authorizer = new ModularRealmAuthorizer();
+        Collection<Realm> crealms = new ArrayList<>();
+        crealms.add(myRealm);
+        authorizer.setRealms(crealms);
+        return authorizer;
+    }
+
+    /**
+     *
+     * @param myRealm
+     * @return authenticator
+     * description:身份认证
+     */
+    @Bean
+    public Authenticator authenticator(MyShiroRealm myRealm){
+        ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
+        Collection<Realm> crealms = new ArrayList<>();
+        crealms.add(myRealm);
+        authenticator.setRealms(crealms);
+        return authenticator;
+    }
+
+    /**
      * create by: leigq
      * description: 权限管理，配置主要是Realm的管理认证
      * create time: 2019/7/1 10:09
@@ -207,11 +244,14 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(myShiroRealm());
         // 自定义session管理 使用redis
         securityManager.setSessionManager(sessionManager());
         // 自定义缓存实现 使用redis
         securityManager.setCacheManager(cacheManager());
+        // 认证授权
+        securityManager.setAuthenticator(authenticator(myShiroRealm()));
+        securityManager.setAuthorizer(authorizer(myShiroRealm()));
+        securityManager.setRealm(myShiroRealm());
         return securityManager;
     }
 

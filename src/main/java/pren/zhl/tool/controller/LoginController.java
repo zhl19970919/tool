@@ -1,9 +1,9 @@
 package pren.zhl.tool.controller;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +44,7 @@ public class LoginController {
      *
      * @return 登录结果
      */
+    @ApiModelProperty(value = "登录")
     @PostMapping("/login")
     public Response login(AccountDTO accountDTO) {
         log.warn("进入登录.....");
@@ -68,24 +69,22 @@ public class LoginController {
     }
 
 
+    @ApiModelProperty(value = "注册")
     @PostMapping("/register")
     public Response register(AccountDTO accountDTO){
-        String userName = accountDTO.getOpenCode();
         String password = accountDTO.getPassword();
-        String name = accountDTO.getName();
-        if (StringUtils.isBlank(userName))
-            return  response.failure("用户名为空！");
-        if (StringUtils.isBlank(password))
-            return  response.failure("密码为空！");
-        if (StringUtils.isBlank(name))
-            return  response.failure("昵称能为空!");
-        Boolean flag = iAccountService.register(accountDTO);
-        if(flag){
-            CacheUser loginUser = iAccountService.login(userName, password);
+        Integer flag = iAccountService.register(accountDTO);
+        if(flag == 1){
+            CacheUser loginUser = iAccountService.login(accountDTO.getOpenCode(), password);
             return response.success("注册成功，已自动登录！", loginUser);
-        }else
+        }else if (flag == -1){
+            response.failure("用户名为空！");
+        }else if (flag == -2){
+            response.failure("密码为空！");
+        }else if (flag == -3){
+            response.failure("昵称能为空!");
+        }
             return response.failure("注册失败！");
-
     }
 
     /**
