@@ -23,5 +23,11 @@ public interface IUserService extends IService<User> {
 
     Integer countUserById(Long id);
 
+    /**
+     *重置密码 当前默认123456 登陆后强制修改密码
+     * @param userId
+     * @return
+     */
+    Boolean resetPwd(Long userId);
 }
 

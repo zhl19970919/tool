@@ -1,12 +1,15 @@
 package pren.zhl.tool.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pren.zhl.tool.bean.Response;
@@ -16,6 +19,7 @@ import pren.zhl.tool.service.IAccountService;
 import pren.zhl.tool.service.IUserService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -38,6 +42,16 @@ public class UserController {
     @Resource
     private Response response;
 
+    @RequiresPermissions("/tool/user")
+    @ApiModelProperty("用户管理主页")
+    @GetMapping
+    public Response index(Page<AccountDTO> page){
+        List<AccountDTO> accountDTOList = iAccountService.getAccountList();
+        if (accountDTOList.size() > 0)
+            return response.success("获取用户列表成功",accountDTOList);
+        return response.failure("获取用户列表失败");
+    }
+
     @RequiresPermissions("/tool/user/add")
     @ApiModelProperty(value = "新增用户")
     @PostMapping("/add")
@@ -57,7 +71,7 @@ public class UserController {
 
     @RequiresPermissions("/tool/user/update")
     @ApiModelProperty(value = "修改用户")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Response Update(User user){
         if (iUserService.updateById(user))
             return response.success("更新用户成功");
@@ -71,5 +85,22 @@ public class UserController {
         if (iAccountService.delete(userId))
             return response.success("删除用户成功");
         return response.failure("删除失败");
+    }
+
+    @RequiresPermissions("/tool/user/recover")
+    @ApiModelProperty(value = "恢复用户")
+    @PutMapping("/{userId}")
+    public Response Recover(@PathVariable Long userId){
+        if (iAccountService.recover(userId))
+            return response.success("恢复用户成功");
+        return response.failure("恢复用户失败");
+    }
+
+    @RequiresPermissions("/tool/user/ResetPwd")
+    @ApiModelProperty(value = "重置密码")
+    @PutMapping("/reset/{userId}")
+    public Response ResetPwd(@PathVariable String userId){
+
+        return response.failure("重置密码失败");
     }
 }

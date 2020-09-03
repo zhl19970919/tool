@@ -3,7 +3,6 @@ package pren.zhl.tool.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.sun.xml.internal.ws.api.pipe.Tube;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -28,6 +27,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import pren.zhl.tool.service.IUserService;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 /**
  * <p>
@@ -61,7 +61,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Override
     public AccountDTO findByOpencode(String username,String userDeleted, String userId) {
-        return accountMapper.findByOpencode(username,userDeleted,userId);
+        return accountMapper.findByOpencode(username, userDeleted, userId);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
             log.warn("CacheUser is {}");
         } catch (UnknownAccountException e) {
             log.error("账户不存在异常：", e);
-            return CacheUser.builder().text("账户不存在异常!").build();
+            return CacheUser.builder().text("账户已停用/不存在!").build();
         } catch (IncorrectCredentialsException e) {
             log.error("凭据错误（密码错误）异常：", e);
             return CacheUser.builder().text("凭据错误（密码错误）异常!").build();
@@ -138,7 +138,6 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         return 0;
     }
 
-
     @Override
     public void logout() {
         Subject subject = SecurityUtils.getSubject();
@@ -157,6 +156,28 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         user.setId(userId);
         user.setDeleted(true);
         account.setDeleted(true);
+        return updateDeleted(userId, user, account);
+    }
+
+    @Override
+    public Boolean recover(Long userId){
+        User user = new User();
+        Account account = new Account();
+        user.setId(userId);
+        user.setDeleted(false);
+        account.setDeleted(false);
+        return updateDeleted(userId, user, account);
+    }
+
+    @Override
+    public List<AccountDTO> getAccountList(){
+        List<AccountDTO> accountDTOList =  accountMapper.getAccountList();
+        List<AccountDTO> returnList = new ArrayList<AccountDTO>();
+        //returnList.
+        return null;
+    }
+
+    private Boolean updateDeleted(Long userId, User user, Account account) {
         try {
             iUserService.updateById(user);
             UpdateWrapper<Account> updateWrapper = new UpdateWrapper<Account>();
@@ -164,12 +185,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
             accountMapper.update(account,updateWrapper);
             return true;
         }catch (Exception e){
-            log.error("用户删除报错",e);
+            log.error("用户更新Deleted报错",e);
             //事务回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return false;
     }
-
 
 }

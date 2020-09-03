@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -27,7 +28,7 @@ public class AccountDTO implements Serializable {
     private String openCode;
 
     @ApiModelProperty(value = "账号类别")
-    private Boolean category;
+    private Integer category;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime created;
@@ -59,13 +60,8 @@ public class AccountDTO implements Serializable {
     @ApiModelProperty(value = "登录密码")
     private String password;
 
+    @ApiModelProperty(value = "账号组")
+    private List username;
 
-    /**
-     * 密码盐. 重新对盐重新进行了定义，用户名+salt，这样就不容易被破解，可以采用多种方式定义加盐
-     *
-     * @return
-     */
-    public String getCredentialsSalt() {
-        return this.name + this.salt;
-    }
+
 }

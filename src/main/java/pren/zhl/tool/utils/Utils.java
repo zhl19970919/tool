@@ -59,7 +59,14 @@ public class Utils {
     public  AccountDTO CurrUser(){
         AccountDTO accountDTO = new AccountDTO();
         Object object = SecurityUtils.getSubject().getPrincipal();
-        BeanUtils.copyProperties(object,accountDTO);
-        return accountDTO;
+        if (object != null){
+            BeanUtils.copyProperties(object,accountDTO);
+        }
+        return  accountDTO;
+    }
+
+    public List<AccountDTO> getAccountsList(List<AccountDTO> accountDTOList,List<AccountDTO> backlist){
+        //if (accountDTOList)
+        return backlist;
     }
 }

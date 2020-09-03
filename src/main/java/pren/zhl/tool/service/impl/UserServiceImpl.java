@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import pren.zhl.tool.entity.User;
@@ -45,6 +47,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         return  baseMapper.selectCount(queryWrapper);
+    }
+
+    @Override
+    public Boolean resetPwd(Long userId){
+        String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
+        User user = new User();
+        user.setSalt(salt);
+        user.setPassword(new Md5Hash("123456",salt,2).toString());
+        user.setId(userId);
+        if (baseMapper.updateById(user) > 0)
+            return true;
+        return false;
     }
 
 }

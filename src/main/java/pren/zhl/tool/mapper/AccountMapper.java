@@ -5,6 +5,8 @@ import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 账号 Mapper 接口
@@ -16,5 +18,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface AccountMapper extends BaseMapper<Account> {
 
     AccountDTO findByOpencode(@Param("openCode") String username, @Param("userDeleted") String userDeleted, @Param("userId") String userId);
+
+    List<AccountDTO> getAccountList();
 
 }

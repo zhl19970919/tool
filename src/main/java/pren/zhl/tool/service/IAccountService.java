@@ -1,5 +1,6 @@
 package pren.zhl.tool.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import pren.zhl.tool.bean.CacheUser;
@@ -40,7 +41,20 @@ public interface IAccountService extends IService<Account> {
      */
     Integer register(AccountDTO accountDTO);
 
+
+    /**
+     * 删除用户（deleted 设为1）
+     * @param userId
+     * @return
+     */
     Boolean delete(Long userId);
+
+    /**
+     *  恢复用户(deleted 设为0)
+     * @param userId
+     * @return
+     */
+    Boolean recover(Long userId);
 
     /**
      * create by: leigq
@@ -50,6 +64,13 @@ public interface IAccountService extends IService<Account> {
      * @param password 密码
      * @return 用户信息
      */
+
+    /**
+     * 用户主页
+     * @return
+     */
+    List<AccountDTO> getAccountList();
+
     CacheUser login(String userName, String password);
 
 

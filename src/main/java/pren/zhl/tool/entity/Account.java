@@ -43,7 +43,7 @@ public class Account implements Serializable {
     private String openCode;
 
     @ApiModelProperty(value = "账号类别")
-    private Boolean category;
+    private Integer category;
 
     @ApiModelProperty(value = "创建时间")
     @TableField( fill = FieldFill.INSERT)

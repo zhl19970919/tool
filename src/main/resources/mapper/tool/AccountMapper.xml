@@ -28,4 +28,24 @@
             <if test="userId != null and userId.length() > 0"> AND a.user_id = #{userId} </if>
         </trim>
     </select>
+    <select id="getAccountList" resultType="pren.zhl.tool.dto.AccountDTO">
+        SELECT
+            u.id AS id,
+            `name` AS `name`,
+            head_img_url AS headImgUrl,
+            mobile AS mobile,
+            `password` AS `password`,
+            u.created AS created,
+            u.creator AS creator,
+            u.edited AS edited,
+            u.editor AS editor,
+            u.deleted AS deleted,
+            a.open_code AS openCode,
+            a.category AS category
+        FROM
+            tool_user u
+            LEFT JOIN tool_account a ON a.user_id = u.id;
+        WHERE
+            u.deleted = 0
+    </select>
 </mapper>
