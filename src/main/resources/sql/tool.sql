@@ -11,7 +11,7 @@
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 02/09/2020 17:30:02
+ Date: 03/09/2020 17:25:07
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `tool_account`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '账号ID',
   `user_id` bigint NOT NULL COMMENT '用户ID',
   `open_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '登录账号',
-  `category` tinyint(1) NULL DEFAULT NULL COMMENT '账号类别\r\n1 手机号\r\n0 其他账号',
+  `category` int NULL DEFAULT NULL COMMENT '账号类别\r\n0 普通账号\r\n1 手机号\r\n2 邮箱',
   `created` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
   `edited` datetime(0) NULL DEFAULT NULL COMMENT '修改时间',
@@ -33,15 +33,16 @@ CREATE TABLE `tool_account`  (
   `deleted` tinyint(1) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT '逻辑删除:0=未删除,1=已删除',
   PRIMARY KEY (`id`, `open_code`) USING BTREE,
   INDEX `idx_member_id`(`user_id`) USING BTREE COMMENT '普通索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_account
 -- ----------------------------
-INSERT INTO `tool_account` VALUES (1, 1, 'admin', 0, '2020-08-29 08:14:15', 'ZHL', '2020-09-02 09:24:36', '注册测试', 1);
-INSERT INTO `tool_account` VALUES (2, 1, '18257116876', 1, '2020-08-29 08:17:18', 'ZHL', '2020-09-02 09:24:36', '注册测试', 1);
-INSERT INTO `tool_account` VALUES (3, 2, '979736189@qq.com', 1, '2020-08-30 08:23:01', 'ZHL', '2020-08-30 08:23:09', 'ZHL', 0);
-INSERT INTO `tool_account` VALUES (32, 3, 'grey', 1, '2020-09-02 09:18:28', '测试管理员', '2020-09-02 09:23:05', '注册测试', 0);
+INSERT INTO `tool_account` VALUES (1, 1, 'admin', 0, '2020-08-29 08:14:15', 'ZHL', '2020-09-02 09:24:36', '注册测试', 0);
+INSERT INTO `tool_account` VALUES (2, 1, '18257116876', 1, '2020-08-29 08:17:18', 'ZHL', '2020-09-02 09:24:36', '注册测试', 0);
+INSERT INTO `tool_account` VALUES (3, 2, '979736189@qq.com', 2, '2020-08-30 08:23:01', 'ZHL', '2020-09-03 05:37:39', '注册测试', 0);
+INSERT INTO `tool_account` VALUES (32, 3, 'grey', 0, '2020-09-02 09:18:28', '测试管理员', '2020-09-03 05:08:00', '测试管理员', 0);
+INSERT INTO `tool_account` VALUES (33, 4, 'testADD', 0, '2020-09-03 02:16:18', NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_permission
@@ -63,7 +64,7 @@ CREATE TABLE `tool_permission`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `parent_id`(`parent_id`) USING BTREE COMMENT '父级权限ID',
   INDEX `code`(`code`) USING BTREE COMMENT '权限CODE代码'
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '权限' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '权限' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_permission
@@ -75,6 +76,7 @@ INSERT INTO `tool_permission` VALUES (4, 2, NULL, '角色管理', NULL, 2, NULL,
 INSERT INTO `tool_permission` VALUES (5, 3, '', '增加用户', '/tool/user/add', 3, 2, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (6, 3, '', '删除用户', '/tool/user/delete', 3, 4, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (7, 3, NULL, '修改用户', '/tool/user/update', 3, 3, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_permission` VALUES (8, 3, NULL, '恢复用户', '/tool/user/recover', 3, 3, NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_role
@@ -119,7 +121,7 @@ CREATE TABLE `tool_role_permission`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE COMMENT '角色ID',
   INDEX `permission_id`(`permission_id`) USING BTREE COMMENT '权限ID'
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_role_permission
@@ -131,6 +133,7 @@ INSERT INTO `tool_role_permission` VALUES (4, 1, 4, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (5, 1, 5, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (6, 1, 6, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (7, 1, 7, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role_permission` VALUES (8, 1, 8, NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_user
@@ -150,14 +153,15 @@ CREATE TABLE `tool_user`  (
   `editor` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人',
   `deleted` tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除:0=未删除,1=已删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_user
 -- ----------------------------
-INSERT INTO `tool_user` VALUES (1, 0, '测试管理员', NULL, '18257116876', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-29 08:12:30', 'ZHL', '2020-09-02 09:24:36', '注册测试', 1);
-INSERT INTO `tool_user` VALUES (2, 0, 'GG', NULL, '18257116876', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-30 08:22:27', 'ZHL', '2020-08-30 08:22:32', 'ZHL', 0);
-INSERT INTO `tool_user` VALUES (3, 0, '注册测试', NULL, NULL, '78f53ccac8b53333d6b8903859b13ab7', 'b656cea5cff22b48e96570ab9f5a2100', '2020-09-02 09:18:28', '测试管理员', '2020-09-02 09:22:50', '注册测试', 0);
+INSERT INTO `tool_user` VALUES (1, 0, '测试管理员', NULL, '18257116876', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-29 08:12:30', 'ZHL', '2020-09-02 09:24:36', '注册测试', 0);
+INSERT INTO `tool_user` VALUES (2, 0, 'GOD', NULL, '18888888888', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-30 08:22:27', 'ZHL', '2020-09-03 05:37:39', '注册测试', 0);
+INSERT INTO `tool_user` VALUES (3, 0, '注册测试', NULL, NULL, '78f53ccac8b53333d6b8903859b13ab7', 'b656cea5cff22b48e96570ab9f5a2100', '2020-09-02 09:18:28', '测试管理员', '2020-09-03 05:08:00', '测试管理员', 0);
+INSERT INTO `tool_user` VALUES (4, 0, '测试注册ADD', NULL, NULL, '9a85b0771d8f7d57acd4ee2251ebfd50', 'bc3d905615c115ed0baf66bead776d4d', '2020-09-03 02:16:18', NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_user_role
