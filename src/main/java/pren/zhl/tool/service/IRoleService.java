@@ -1,5 +1,6 @@
 package pren.zhl.tool.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.dto.RoleDTO;
 import pren.zhl.tool.entity.Role;
@@ -18,4 +19,6 @@ import java.util.List;
 
 public interface IRoleService extends IService<Role> {
     List<RoleDTO> getUserRoles(Long userId);
+
+    Page<Role> getRoles(Page<Role> page);
 }

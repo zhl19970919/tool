@@ -24,4 +24,11 @@
             AND r.`id` = ur.`role_id`
             AND u.`id` = #{userId}
   </select>
+    <select id="getRoles" resultType="pren.zhl.tool.entity.Role">
+        SELECT
+            id,parent_id AS parentId,`code`,`name`,intro
+        FROM
+            tool_role
+        WHERE deleted = 0
+    </select>
 </mapper>

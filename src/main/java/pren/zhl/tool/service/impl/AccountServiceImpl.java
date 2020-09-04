@@ -3,6 +3,7 @@ package pren.zhl.tool.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -20,14 +21,18 @@ import pren.zhl.tool.bean.CacheUser;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import pren.zhl.tool.entity.User;
+import pren.zhl.tool.entity.UserRole;
 import pren.zhl.tool.mapper.AccountMapper;
 import pren.zhl.tool.mapper.UserMapper;
 import pren.zhl.tool.service.IAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import pren.zhl.tool.service.IUserRoleService;
 import pren.zhl.tool.service.IUserService;
+import pren.zhl.tool.utils.Utils;
+
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 /**
  * <p>
@@ -50,6 +55,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private IUserRoleService iUserRoleService;
 
 
     @Override
@@ -104,12 +112,15 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         String userName = accountDTO.getOpenCode();
         String password = accountDTO.getPassword();
         String name = accountDTO.getName();
+        Long[] roleIds = accountDTO.getRoleIds();
         if (StringUtils.isBlank(userName))
             return  -1;
         if (StringUtils.isBlank(password))
             return  -2;
         if (StringUtils.isBlank(name))
             return  -3;
+        if(roleIds == null && roleIds.length == 0)
+            return  -4;
         String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
         accountDTO.setPassword(new Md5Hash(accountDTO.getPassword(),salt,2).toString());
         accountDTO.setSalt(salt);
@@ -117,7 +128,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         User user = new User();
         BeanUtils.copyProperties(accountDTO,account);
         BeanUtils.copyProperties(accountDTO,user);
-        user.setId(userMapper.getNextId());
+        Long nextId = userMapper.getNextId();
+        List<UserRole> userRoleBatchList = new Utils().getUserRoleBatchList(nextId,accountDTO.getRoleIds());
+        user.setId(nextId);
         account.setUserId(user.getId());
         QueryWrapper<Account> queryWrapper = new QueryWrapper();
         queryWrapper.eq("open_code",accountDTO.getOpenCode());
@@ -128,6 +141,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
             try {
                 iUserService.save(user);
                 baseMapper.insert(account);
+                iUserRoleService.saveBatch(userRoleBatchList);
                 return 1;
             }catch (Exception e){
                 log.error("用户注册插库报错",e);
@@ -136,6 +150,28 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
             }
         }
         return 0;
+    }
+
+    @Override
+    public Boolean update(AccountDTO accountDTO){
+        Long userId = accountDTO.getUserId();
+        User user = new User();
+        BeanUtils.copyProperties(accountDTO,user);
+        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        user.setId(userId);
+        List<UserRole> userRoleBatchList = new Utils().getUserRoleBatchList(accountDTO.getUserId(),accountDTO.getRoleIds());
+        try {
+            iUserService.updateById(user);
+            iUserRoleService.remove(queryWrapper);
+            iUserRoleService.saveBatch(userRoleBatchList);
+            return true;
+        }catch (Exception e){
+            log.error("用户更新报错",e);
+            //事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return false;
     }
 
     @Override
@@ -170,11 +206,10 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public List<AccountDTO> getAccountList(){
-        List<AccountDTO> accountDTOList =  accountMapper.getAccountList();
-        List<AccountDTO> returnList = new ArrayList<AccountDTO>();
-        //returnList.
-        return null;
+    public Page<AccountDTO> getAccountList(Page<AccountDTO> page){
+        Page<AccountDTO> accountDTOList =  accountMapper.getAccountList(page);
+        accountDTOList.setRecords(new Utils().getAccountsList(accountDTOList.getRecords()));
+        return accountDTOList;
     }
 
     private Boolean updateDeleted(Long userId, User user, Account account) {

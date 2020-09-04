@@ -1,15 +1,11 @@
 package pren.zhl.tool.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.springframework.context.annotation.Primary;
-import org.springframework.transaction.annotation.Transactional;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import pren.zhl.tool.bean.CacheUser;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
 import com.baomidou.mybatisplus.extension.service.IService;
-import pren.zhl.tool.entity.User;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -41,6 +37,13 @@ public interface IAccountService extends IService<Account> {
      */
     Integer register(AccountDTO accountDTO);
 
+    /**
+     * 修改用户
+     * @param accountDTO
+     * @return
+     */
+    Boolean update(AccountDTO accountDTO);
+
 
     /**
      * 删除用户（deleted 设为1）
@@ -68,8 +71,9 @@ public interface IAccountService extends IService<Account> {
     /**
      * 用户主页
      * @return
+     * @param page
      */
-    List<AccountDTO> getAccountList();
+    Page<AccountDTO> getAccountList(Page<AccountDTO> page);
 
     CacheUser login(String userName, String password);
 

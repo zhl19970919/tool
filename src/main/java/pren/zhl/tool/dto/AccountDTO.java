@@ -6,10 +6,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import pren.zhl.tool.entity.Account;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -23,6 +25,9 @@ public class AccountDTO implements Serializable {
 
     @ApiModelProperty(value = "用户ID")
     private Long userId;
+
+    @ApiModelProperty(value = "角色ID")
+    private Long[] roleIds;
 
     @ApiModelProperty(value = "登录账号,如手机号等")
     private String openCode;
@@ -61,7 +66,10 @@ public class AccountDTO implements Serializable {
     private String password;
 
     @ApiModelProperty(value = "账号组")
-    private List username;
+    private ArrayList<Account> Opencodes;
 
+    private String usernames;
+
+    private String ids;
 
 }

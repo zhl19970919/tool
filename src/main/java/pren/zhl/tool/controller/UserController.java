@@ -46,8 +46,8 @@ public class UserController {
     @ApiModelProperty("用户管理主页")
     @GetMapping
     public Response index(Page<AccountDTO> page){
-        List<AccountDTO> accountDTOList = iAccountService.getAccountList();
-        if (accountDTOList.size() > 0)
+        Page<AccountDTO> accountDTOList = iAccountService.getAccountList(page);
+        if (accountDTOList.getRecords() != null && accountDTOList.getRecords().size() > 0)
             return response.success("获取用户列表成功",accountDTOList);
         return response.failure("获取用户列表失败");
     }
@@ -65,6 +65,8 @@ public class UserController {
             response.failure("密码为空！");
         }else if (flag == -3){
             response.failure("昵称能为空!");
+        }else if (flag == -4){
+            response.failure("用户ID不能为空!");
         }
         return response.failure("新增用户失败！");
     }
@@ -72,14 +74,15 @@ public class UserController {
     @RequiresPermissions("/tool/user/update")
     @ApiModelProperty(value = "修改用户")
     @PutMapping("/update")
-    public Response Update(User user){
-        if (iUserService.updateById(user))
+    public Response Update(AccountDTO accountDTO){
+        if (iAccountService.update(accountDTO))
             return response.success("更新用户成功");
         return response.failure("修改失败");
     }
 
+
     @RequiresPermissions("/tool/user/delete")
-    @ApiModelProperty(value = "删除用户")
+    @ApiModelProperty(value = "禁用用户")
     @DeleteMapping("/{userId}")
     public Response Delete(@PathVariable Long userId){
         if (iAccountService.delete(userId))
@@ -100,7 +103,6 @@ public class UserController {
     @ApiModelProperty(value = "重置密码")
     @PutMapping("/reset/{userId}")
     public Response ResetPwd(@PathVariable String userId){
-
         return response.failure("重置密码失败");
     }
 }

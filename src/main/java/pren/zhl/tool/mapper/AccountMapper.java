@@ -1,5 +1,6 @@
 package pren.zhl.tool.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.entity.Account;
@@ -19,6 +20,6 @@ public interface AccountMapper extends BaseMapper<Account> {
 
     AccountDTO findByOpencode(@Param("openCode") String username, @Param("userDeleted") String userDeleted, @Param("userId") String userId);
 
-    List<AccountDTO> getAccountList();
+    Page<AccountDTO> getAccountList(Page<AccountDTO> page);
 
 }
