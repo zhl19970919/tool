@@ -11,7 +11,7 @@
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 03/09/2020 17:25:07
+ Date: 04/09/2020 17:28:03
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `tool_account`  (
   `deleted` tinyint(1) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT '逻辑删除:0=未删除,1=已删除',
   PRIMARY KEY (`id`, `open_code`) USING BTREE,
   INDEX `idx_member_id`(`user_id`) USING BTREE COMMENT '普通索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_account
@@ -43,6 +43,7 @@ INSERT INTO `tool_account` VALUES (2, 1, '18257116876', 1, '2020-08-29 08:17:18'
 INSERT INTO `tool_account` VALUES (3, 2, '979736189@qq.com', 2, '2020-08-30 08:23:01', 'ZHL', '2020-09-03 05:37:39', '注册测试', 0);
 INSERT INTO `tool_account` VALUES (32, 3, 'grey', 0, '2020-09-02 09:18:28', '测试管理员', '2020-09-03 05:08:00', '测试管理员', 0);
 INSERT INTO `tool_account` VALUES (33, 4, 'testADD', 0, '2020-09-03 02:16:18', NULL, NULL, NULL, 0);
+INSERT INTO `tool_account` VALUES (36, 5, 'testADD12', 2, '2020-09-04 08:57:24', '注册测试', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_permission
@@ -72,11 +73,14 @@ CREATE TABLE `tool_permission`  (
 INSERT INTO `tool_permission` VALUES (1, 0, NULL, '系统设置', NULL, 0, NULL, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (2, 1, NULL, '权限设置', NULL, 1, NULL, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (3, 2, NULL, '用户管理', '/tool/user', 2, 1, NULL, NULL, NULL, NULL, 0);
-INSERT INTO `tool_permission` VALUES (4, 2, NULL, '角色管理', NULL, 2, NULL, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_permission` VALUES (4, 2, NULL, '角色管理', '/tool/role', 2, NULL, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (5, 3, '', '增加用户', '/tool/user/add', 3, 2, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (6, 3, '', '删除用户', '/tool/user/delete', 3, 4, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (7, 3, NULL, '修改用户', '/tool/user/update', 3, 3, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_permission` VALUES (8, 3, NULL, '恢复用户', '/tool/user/recover', 3, 3, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_permission` VALUES (9, 4, NULL, '增加角色', '/tool/role/add', 3, 2, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_permission` VALUES (10, 4, NULL, '修改角色', '/tool/role/update', 3, 3, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_permission` VALUES (11, 4, NULL, '删除角色', '/tool/role/delete', 3, 4, NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_role
@@ -96,14 +100,22 @@ CREATE TABLE `tool_role`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `parent_id`(`parent_id`) USING BTREE COMMENT '父级权限ID',
   INDEX `code`(`code`) USING BTREE COMMENT '权限CODE代码'
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_role
 -- ----------------------------
-INSERT INTO `tool_role` VALUES (1, 0, NULL, '超级管理员', '最高权限', NULL, NULL, NULL, NULL, 0);
-INSERT INTO `tool_role` VALUES (2, 1, NULL, '系统管理员', '维护', NULL, NULL, NULL, NULL, 0);
-INSERT INTO `tool_role` VALUES (3, 0, NULL, 'CEO', '执行人', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (1, 0, NULL, '管理员', 'ADMIN', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (2, 1, NULL, '系统管理员', 'SA', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (3, 1, NULL, '运维管理器', 'OA', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (4, 1, NULL, '平台管理员', 'PA', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (5, 0, NULL, '用户', 'USER', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (6, 5, NULL, '超级会员', 'SVIP', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (7, 5, NULL, '一般会员', 'VIP', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (8, 5, NULL, '体验会员', 'EVIP', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (9, 6, NULL, '青铜会员', 'SVIP1', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (10, 6, NULL, '白银会员', 'SVIP2', NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role` VALUES (11, 6, NULL, '黄金会员', 'SVIP3', NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_role_permission
@@ -121,7 +133,7 @@ CREATE TABLE `tool_role_permission`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE COMMENT '角色ID',
   INDEX `permission_id`(`permission_id`) USING BTREE COMMENT '权限ID'
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tool_role_permission
@@ -134,6 +146,9 @@ INSERT INTO `tool_role_permission` VALUES (5, 1, 5, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (6, 1, 6, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (7, 1, 7, NULL, NULL, NULL, NULL, 0);
 INSERT INTO `tool_role_permission` VALUES (8, 1, 8, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role_permission` VALUES (9, 1, 9, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role_permission` VALUES (10, 1, 10, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `tool_role_permission` VALUES (11, 1, 11, NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_user
@@ -159,9 +174,10 @@ CREATE TABLE `tool_user`  (
 -- Records of tool_user
 -- ----------------------------
 INSERT INTO `tool_user` VALUES (1, 0, '测试管理员', NULL, '18257116876', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-29 08:12:30', 'ZHL', '2020-09-02 09:24:36', '注册测试', 0);
-INSERT INTO `tool_user` VALUES (2, 0, 'GOD', NULL, '18888888888', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-30 08:22:27', 'ZHL', '2020-09-03 05:37:39', '注册测试', 0);
+INSERT INTO `tool_user` VALUES (2, 0, 'GOD111', NULL, '18888888888', '94adf0180cd98862bcc98dc5c0b143a1', '31e655584af0192e5518ea3fd52d3c03', '2020-08-30 08:22:27', 'ZHL', '2020-09-04 09:26:25', '注册测试', 0);
 INSERT INTO `tool_user` VALUES (3, 0, '注册测试', NULL, NULL, '78f53ccac8b53333d6b8903859b13ab7', 'b656cea5cff22b48e96570ab9f5a2100', '2020-09-02 09:18:28', '测试管理员', '2020-09-03 05:08:00', '测试管理员', 0);
 INSERT INTO `tool_user` VALUES (4, 0, '测试注册ADD', NULL, NULL, '9a85b0771d8f7d57acd4ee2251ebfd50', 'bc3d905615c115ed0baf66bead776d4d', '2020-09-03 02:16:18', NULL, NULL, NULL, 0);
+INSERT INTO `tool_user` VALUES (5, 0, '测试注册ADD', NULL, NULL, 'ae24e645d34acec9a65c42fed49c2b44', '7170032fe95fc2cb2f0158f1f511bb0b', '2020-09-04 08:57:24', '注册测试', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for tool_user_role
@@ -188,5 +204,8 @@ INSERT INTO `tool_user_role` VALUES (1, 1, 1, '2020-09-02 09:45:27', NULL, '2020
 INSERT INTO `tool_user_role` VALUES (2, 3, 2, '2020-09-02 09:45:52', NULL, '2020-09-02 09:45:55', NULL, 0);
 INSERT INTO `tool_user_role` VALUES (3, 3, 1, '2020-09-02 09:46:05', NULL, '2020-09-02 09:46:09', NULL, 0);
 INSERT INTO `tool_user_role` VALUES (4, 3, 3, '2020-09-02 09:46:51', NULL, '2020-09-02 09:46:53', NULL, 0);
+INSERT INTO `tool_user_role` VALUES (5, 5, 6, '2020-09-04 08:57:24', '注册测试', NULL, NULL, 0);
+INSERT INTO `tool_user_role` VALUES (6, 5, 11, '2020-09-04 08:57:24', '注册测试', NULL, NULL, 0);
+INSERT INTO `tool_user_role` VALUES (9, 2, 7, '2020-09-04 09:26:25', '注册测试', NULL, NULL, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
