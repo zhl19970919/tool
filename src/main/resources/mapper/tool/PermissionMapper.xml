@@ -13,4 +13,18 @@
           AND p.`id` = rp.`permission_id`
           AND r.`id` = #{roleId};
     </select>
+    <select id="getPermissionList" resultType="pren.zhl.tool.entity.Permission">
+        SELECT
+            id,
+            parent_id AS parentId,
+            CODE,
+            NAME,
+            intro,
+            category,
+            uri
+        FROM
+            tool_permission
+        WHERE
+            deleted = 0
+    </select>
 </mapper>

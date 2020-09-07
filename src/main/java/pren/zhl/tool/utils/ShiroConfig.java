@@ -67,12 +67,17 @@ public class ShiroConfig {
          * */
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/register","anon");
+        filterChainDefinitionMap.put("/swagger-ui.html","anon");
         // 配置不会被拦截的链接 顺序判断，因为前端模板采用了thymeleaf，这里不能直接使用 ("/static/**", "anon")来配置匿名访问，必须配置到每个静态目录
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/fonts/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");
         filterChainDefinitionMap.put("/html/**", "anon");
+        filterChainDefinitionMap.put("doc.html*","anon");
+        filterChainDefinitionMap.put("/webjars/**","anon");
+        filterChainDefinitionMap.put("/v2/**","anon");
+        filterChainDefinitionMap.put("/swagger-resources/**","anon");
         // 所有url都必须认证通过才可以访问
         filterChainDefinitionMap.put("/**", "authc");
 

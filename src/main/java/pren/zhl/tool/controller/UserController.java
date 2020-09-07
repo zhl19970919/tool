@@ -2,8 +2,9 @@ package pren.zhl.tool.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.ApiModelProperty;
-import org.apache.ibatis.annotations.Delete;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pren.zhl.tool.bean.Response;
 import pren.zhl.tool.dto.AccountDTO;
-import pren.zhl.tool.entity.User;
 import pren.zhl.tool.service.IAccountService;
 import pren.zhl.tool.service.IUserService;
-
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * <p>
@@ -29,6 +27,7 @@ import java.util.List;
  * @author zhl
  * @since 2020-08-27
  */
+@Api(value="用户controller",tags={"用户操作接口"})
 @RestController
 @RequestMapping("/tool/user")
 public class UserController {
@@ -43,7 +42,7 @@ public class UserController {
     private Response response;
 
     @RequiresPermissions("/tool/user")
-    @ApiModelProperty("用户管理主页")
+    @ApiOperation("用户管理主页")
     @GetMapping
     public Response index(Page<AccountDTO> page){
         Page<AccountDTO> accountDTOList = iAccountService.getAccountList(page);
@@ -53,7 +52,7 @@ public class UserController {
     }
 
     @RequiresPermissions("/tool/user/add")
-    @ApiModelProperty(value = "新增用户")
+    @ApiOperation(value = "新增用户")
     @PostMapping("/add")
     public Response Add(AccountDTO accountDTO){
         Integer flag = iAccountService.register(accountDTO);
@@ -72,7 +71,7 @@ public class UserController {
     }
 
     @RequiresPermissions("/tool/user/update")
-    @ApiModelProperty(value = "修改用户")
+    @ApiOperation(value = "修改用户")
     @PutMapping("/update")
     public Response Update(AccountDTO accountDTO){
         if (iAccountService.update(accountDTO))
@@ -82,27 +81,29 @@ public class UserController {
 
 
     @RequiresPermissions("/tool/user/delete")
-    @ApiModelProperty(value = "禁用用户")
+    @ApiOperation(value = "禁用用户")
     @DeleteMapping("/{userId}")
-    public Response Delete(@PathVariable Long userId){
+    public Response Delete(@ApiParam(name = "userId", value = "用户id", required = true) @PathVariable Long userId){
         if (iAccountService.delete(userId))
             return response.success("删除用户成功");
         return response.failure("删除失败");
     }
 
     @RequiresPermissions("/tool/user/recover")
-    @ApiModelProperty(value = "恢复用户")
+    @ApiOperation(value = "恢复用户")
     @PutMapping("/{userId}")
-    public Response Recover(@PathVariable Long userId){
+    public Response Recover(@ApiParam(name = "userId", value = "用户id", required = true) @PathVariable Long userId){
         if (iAccountService.recover(userId))
             return response.success("恢复用户成功");
         return response.failure("恢复用户失败");
     }
 
     @RequiresPermissions("/tool/user/ResetPwd")
-    @ApiModelProperty(value = "重置密码")
+    @ApiOperation(value = "重置密码")
     @PutMapping("/reset/{userId}")
-    public Response ResetPwd(@PathVariable String userId){
+    public Response ResetPwd(@ApiParam(name = "userId", value = "用户id", required = true) @PathVariable Long userId){
+        if (iUserService.resetPwd(userId))
+            return response.success("重置密码成功，初始密码为123456");
         return response.failure("重置密码失败");
     }
 }

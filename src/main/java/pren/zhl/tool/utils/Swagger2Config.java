@@ -2,6 +2,9 @@ package pren.zhl.tool.utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,7 +23,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
-public class Swagger2Config {
+public class Swagger2Config implements WebMvcConfigurer {
 
     @Bean
     public Docket createRestApi() {
@@ -28,7 +31,7 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .select()
                 //为当前包路径
-                .apis(RequestHandlerSelectors.basePackage("com.example.web"))
+                .apis(RequestHandlerSelectors.basePackage("pren.zhl.tool"))
                 .paths(PathSelectors.any())
                 .build();
     }
@@ -37,13 +40,24 @@ public class Swagger2Config {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 //页面标题
-                .title("Spring Boot 测试使用 Swagger2 构建RESTful API")
+                .title("Tool Swager2")
                 //创建人
-                .contact(new Contact("yw", "http://www.baidu.com", "yw@163.com"))
+                .contact(new Contact("zhl", "https://github.com/zhl19970919/", "979736189@qq.com"))
                 //版本号
                 .version("1.0")
                 //描述
                 .description("API 描述")
                 .build();
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

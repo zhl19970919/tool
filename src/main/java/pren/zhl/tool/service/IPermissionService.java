@@ -1,7 +1,7 @@
 package pren.zhl.tool.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.context.annotation.Primary;
 import pren.zhl.tool.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,4 +18,12 @@ import java.util.List;
 
 public interface IPermissionService extends IService<Permission> {
     List<Permission> getRolePermissions(@Param("roleId") Long roleId);
+
+    Page<Permission> getPermissionList(Page<Permission> page);
+
+    List<Permission> getPermissionTree();
+
+    Boolean delete (Long id);
+
+    Boolean batchDelete(List<Long> ids);
 }

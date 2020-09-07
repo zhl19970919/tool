@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import pren.zhl.tool.entity.Account;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -68,8 +69,10 @@ public class AccountDTO implements Serializable {
     @ApiModelProperty(value = "账号组")
     private ArrayList<Account> Opencodes;
 
+    @ApiModelProperty(value = "账号Row")
     private String usernames;
 
+    @ApiModelProperty(value = "idRow")
     private String ids;
 
 }

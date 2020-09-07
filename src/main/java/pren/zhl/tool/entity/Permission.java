@@ -47,7 +47,7 @@ public class Permission implements Serializable {
     private String intro;
 
     @ApiModelProperty(value = "权限类别")
-    private Boolean category;
+    private Integer category;
 
     @ApiModelProperty(value = "URL规则")
     private Long uri;

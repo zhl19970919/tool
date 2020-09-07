@@ -1,6 +1,8 @@
 package pren.zhl.tool.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import pren.zhl.tool.bean.Response;
 import pren.zhl.tool.dto.AccountDTO;
 import pren.zhl.tool.service.IAccountService;
 import pren.zhl.tool.service.IUserService;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 
@@ -23,6 +26,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("/")
+@Api(value="登录controller",tags={"登录接口"})
 public class LoginController {
 
     @Resource
@@ -44,7 +48,7 @@ public class LoginController {
      *
      * @return 登录结果
      */
-    @ApiModelProperty(value = "登录")
+    @ApiOperation(value = "登录")
     @PostMapping("/login")
     public Response login(AccountDTO accountDTO) {
         log.warn("进入登录.....");
@@ -68,8 +72,7 @@ public class LoginController {
             return response.failure("登录失败",loginUser);
     }
 
-
-    @ApiModelProperty(value = "注册")
+    @ApiOperation(value = "注册")
     @PostMapping("/register")
     public Response register(AccountDTO accountDTO){
         String password = accountDTO.getPassword();
@@ -92,6 +95,7 @@ public class LoginController {
      * description: 登出
      * create time: 2019/6/28 17:37
      */
+    @ApiIgnore
     @RequestMapping("/logout")
     public Response logOut() {
         iAccountService.logout();
@@ -106,6 +110,7 @@ public class LoginController {
      * create time: 2019/7/3 14:53
      * @return  
      */
+    @ApiIgnore
     @RequestMapping("/un_auth")
     public Response unAuth() {
         return response.failure(HttpStatus.UNAUTHORIZED, "用户未登录！", null);
@@ -119,6 +124,7 @@ public class LoginController {
      * create time: 2019/7/3 14:53
      * @return
      */
+    @ApiIgnore
     @RequestMapping("/unauthorized")
     public Response unauthorized() {
         return response.failure(HttpStatus.FORBIDDEN, "用户无权限！", null);

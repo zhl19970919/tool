@@ -21,4 +21,8 @@ public interface IRoleService extends IService<Role> {
     List<RoleDTO> getUserRoles(Long userId);
 
     Page<Role> getRoles(Page<Role> page);
+
+    Boolean delete(Long id);
+
+    Boolean BatchDelete(List<Long> ids);
 }
