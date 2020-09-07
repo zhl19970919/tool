@@ -1,7 +1,6 @@
 package pren.zhl.tool.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,9 +27,6 @@ import javax.annotation.Resource;
 @RequestMapping("/")
 @Api(value="登录controller",tags={"登录接口"})
 public class LoginController {
-
-    @Resource
-    private IUserService iUserService;
 
     @Resource
     private IAccountService iAccountService;

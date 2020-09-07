@@ -11,7 +11,7 @@
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 07/09/2020 13:54:30
+ Date: 07/09/2020 17:19:51
 */
 
 SET NAMES utf8mb4;
@@ -44,6 +44,34 @@ INSERT INTO `tool_account` VALUES (3, 2, '979736189@qq.com', 2, '2020-08-30 08:2
 INSERT INTO `tool_account` VALUES (32, 3, 'grey', 0, '2020-09-02 09:18:28', '测试管理员', '2020-09-03 05:08:00', '测试管理员', 0);
 INSERT INTO `tool_account` VALUES (33, 4, 'testADD', 0, '2020-09-03 02:16:18', NULL, NULL, NULL, 0);
 INSERT INTO `tool_account` VALUES (36, 5, 'testADD12', 2, '2020-09-04 08:57:24', '注册测试', NULL, NULL, 0);
+
+-- ----------------------------
+-- Table structure for tool_media
+-- ----------------------------
+DROP TABLE IF EXISTS `tool_media`;
+CREATE TABLE `tool_media`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '媒体类ID',
+  `media_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名称',
+  `origin_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '源文件名',
+  `curr_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '当前文件名',
+  `media_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '媒体类型',
+  `media_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '储存网址',
+  `operate_code` int NULL DEFAULT NULL COMMENT '操作代码',
+  `result_word` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '处理结果-文字',
+  `result_media_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '处理结果-媒体URL',
+  `deleted` tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除:0=未删除,1=已删除',
+  `created` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `creator` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `edited` datetime(0) NULL DEFAULT NULL COMMENT '修改时间',
+  `editor` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '修改人',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tool_media
+-- ----------------------------
+INSERT INTO `tool_media` VALUES (1, '火车票', '去.jpg', NULL, 'jpg', '/E:/software/tool/target/classes/static\\upload\\jpg\\去.jpg', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `tool_media` VALUES (2, '火车票', '回.jpg', '1599470313072.jpg', 'jpg', '/E:/software/tool/target/classes/static\\upload\\jpg\\1599470313072.jpg', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for tool_permission
