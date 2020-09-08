@@ -46,12 +46,6 @@ public class Media implements Serializable {
     @ApiModelProperty(value = "储存网址")
     private String mediaUrl;
 
-    @ApiModelProperty(value = "操作代码")
-    private Integer operateCode;
-
-    @ApiModelProperty(value = "处理结果-文字")
-    private String resultWord;
-
     @ApiModelProperty(value = "处理结果-媒体URL")
     private String resultMediaUrl;
 

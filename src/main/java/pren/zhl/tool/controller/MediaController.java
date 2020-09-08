@@ -36,7 +36,7 @@ public class MediaController {
     @Resource
     private IMediaService iMediaService;
 
-    @ApiOperation(value = "上传")
+    @ApiOperation(value = "上传单个文件")
     @PostMapping("/upload")
     public Response upload(Media media, @RequestParam(value="file", required=false) MultipartFile file){
         if (file.isEmpty()){
